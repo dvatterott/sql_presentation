@@ -123,11 +123,11 @@
 									<td>25.0</td>
 								</tr>
 								<tr>
-									<td align="center"><div class="vert_dots"></div></td>
-									<td align="center"><div class="vert_dots"></div></td>
-									<td align="center"><div class="vert_dots"></div></td>
-									<td align="center"><div class="vert_dots"></div></td>
-									<td align="center"><div class="vert_dots"></div></td>
+									<td><div class="vert_dots"></div></td>
+									<td><div class="vert_dots"></div></td>
+									<td><div class="vert_dots"></div></td>
+									<td><div class="vert_dots"></div></td>
+									<td><div class="vert_dots"></div></td>
 								</tr>
 							</tbody>
 						</table>
@@ -136,7 +136,7 @@
 				<section>
 					<section>
 						<h3>Where statement</h3>
-							<p>How to create a list of people who watched "Star Trek: The Next Generation"?</p>
+							<p>Create a list of people who watched "Star Trek: The Next Generation".</p>
 							<pre class=fragment><code class="hljs" data-trim contenteditable>
 								SELECT
 								    DISTINCT(user_id)
@@ -164,7 +164,7 @@
 			 <section>
 				 <section>
 					 <h3>Group By Statement</h3>
-						 <p>How to create a list of the 10 people that watched the most "Star Trek: Voyager" episode ones?</p>
+						 <p>Create a list of the 10 people that watched the most "Star Trek: Voyager" episode ones.</p>
 						 <pre class=fragment><code class="hljs" data-trim contenteditable>
 							 SELECT
 							     user_id,
@@ -184,7 +184,7 @@
 				 </section>
 				 <section>
 					<h3>Group By Statement: The Return</h3>
-						<p>How to create a list of then people that watched the all "Star Trek: Voyager" episode ones?</p>
+						<p>Create a list of then people that watched the all "Star Trek: Voyager" episode ones.</p>
 						<pre class=fragment><code class="hljs" data-trim contenteditable>
 							SELECT
 							    user_id,
@@ -216,14 +216,241 @@
 				</section>
 				<section>
 					<h3>Fake_table_2</h3>
+					<table id="cssTable">
+						<thead>
+							<tr>
+								<th>series_name</th>
+								<th>male_lead</th>
+								<th>genre</th>
+								<th>certified_fresh</th>
+								<th>start_date</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>'Battlestar Galactica'</td>
+								<td>1</td>
+								<td>'sci-fi'</td>
+								<td>1</td>
+								<td>'2003-12-08'</td>
+							</tr>
+							<tr>
+								<td>'Star Trek: DS9'</td>
+								<td>1</td>
+								<td>'sci-fi'</td>
+								<td>1</td>
+								<td>'1993-01-03'</td>
+							</tr>
+							<tr>
+								<td>'Star Trek: Voyager'</td>
+								<td>0</td>
+								<td>'sci-fi'</td>
+								<td>1</td>
+								<td>'1995-01-16'</td>
+							</tr>
+							<tr>
+								<td><div class="vert_dots"></div></td>
+								<td><div class="vert_dots"></div></td>
+								<td><div class="vert_dots"></div></td>
+								<td><div class="vert_dots"></div></td>
+								<td><div class="vert_dots"></div></td>
+							</tr>
+						</tbody>
+					</table>
 				</section>
 				<section>
-					<h3>Example Qusetion</h3>
+					<h3>Join Qusetion</h3>
+					<p>Create a list of the ten people who watched the most non-male-lead episodes.</p>
+					<pre class=fragment><code class="hljs" data-trim contenteditable>
+						SELECT
+						    ft.user_id,
+						    COUNT(ft.episode_number) AS e1_count
+						FROM
+						    fake_table AS ft
+						    LEFT JOIN fake_table_2 AS ft2
+						      ON ft.seies_name = ft2.series_name
+						WHERE
+						    ft2.male_lead = False
+						GROUP BY
+						    ft.user_id
+						ORDER BY
+						    COUNT(ft.episode_number)
+						LIMIT 10
+					</code></pre>
+				</section>
+			</section>
+
+			<section>
+				<section>
+					<h3>Sub-Queries</h3>
+					<p>Create a list of the ten people who watched the most non-male-lead shows.</p>
+					<pre class=fragment><code class="hljs" data-trim contenteditable>
+						SELECT
+						    ft.user_id,
+						    COUNT(ft.series_name) AS series_count
+						FROM
+						    (SELECT
+						         DISTINCT(user_id, series_name)
+						     FROM
+						         fake_table
+						    ) AS ft
+						    LEFT JOIN fake_table_2 AS ft2
+						      ON ft.seies_name = ft2.series_name
+						WHERE
+						    ft2.male_lead = False
+						GROUP BY
+						    ft.user_id
+						ORDER BY
+						    COUNT(ft.series_name)
+						LIMIT 10
+					</code></pre>
 				</section>
 				<section>
 					<h3>SQL makes my head hurt</h3>
-					<img class="fragment" height=500 width=500 src="https://media0.giphy.com/media/Vu8nIaC6rSVi/200.gif"></img>
+					<img height=500 width=500 src="https://media0.giphy.com/media/Vu8nIaC6rSVi/200.gif"></img>
 				</section>
+				<section>
+					<h3>Sub-Queries with a temp table</h3>
+					<p>Create a list of the ten people who watched the most non-male-lead shows.</p>
+					<pre class=fragment><code class="hljs" data-trim contenteditable>
+						WITH temp_table AS (
+						    SELECT
+						        DISTINCT(user_id, series_name)
+						    FROM
+						        fake_table
+						)
+						SELECT
+						    ft.user_id,
+						    COUNT(ft.series_name) AS series_count
+						FROM
+						    temp_table AS ft
+						    LEFT JOIN fake_table_2 AS ft2
+						      ON ft.seies_name = ft2.series_name
+						WHERE
+						    ft2.male_lead = False
+						GROUP BY
+						    ft.user_id
+						ORDER BY
+						    COUNT(ft.series_name)
+						LIMIT 10
+					</code></pre>
+				</section>
+				<section>
+					<h3>Much better!</h3>
+					<img height=500 width=500 src="https://media.giphy.com/media/bTzFnjHPuVvva/giphy.gif"></img>
+				</section>
+			</section>
+
+			<section>
+				<section>
+					<h3>Exist Statements</h3>
+					<p>Create a list of ten people who watched Star Trek: Voyager and Star Trek: DS9.</p>
+					<pre class=fragment><code class="hljs" data-trim contenteditable>
+						WITH temp_table AS (
+						    SELECT
+						        DISTINCT(user_id) AS user_id
+						    FROM
+						        fake_table
+						    WHERE
+						        series_name = 'Star Trek: Voyager'
+						)
+						SELECT
+						    DISTINCT(user_id) AS user_id
+						FROM
+						    fake_table AS ft
+						WHERE
+						    series_name = 'Star Trek: Voyager'
+						    AND
+						    EXISTS (
+							SELECT
+					              1
+						        FROM
+						            temp_table
+						        WHERE
+						            temp_table.user_id = ft.user_id)
+					</code></pre>
+				</section>
+				<section>
+					<h3>In Statements</h3>
+					<p>Create a list of ten people who watched Star Trek: Voyager and Star Trek: DS9.</p>
+					<pre><code class="hljs" data-trim contenteditable>
+						WITH temp_table AS (
+						    SELECT
+						        DISTINCT(user_id) AS user_id
+						    FROM
+						        fake_table
+						    WHERE
+						        series_name = 'Star Trek: Voyager'
+						)
+						SELECT
+						    DISTINCT(user_id) AS user_id
+						FROM
+						    fake_table AS ft
+						WHERE
+						    series_name = 'Star Trek: Voyager'
+						    AND
+						    user_id IN (SELECT user_id FROM temp_table)
+					</code></pre>
+				</section>
+			</section>
+
+			<section>
+				<h3>Case Statements</h3>
+				<p>Count whether more episodes are watched on the weekends or weekdays.</p>
+				<pre><code class="hljs" data-trim contenteditable>
+					SELECT
+          CASE
+              WHEN extract(isodow from date date) > 5 THEN 'weekend'
+              ELSE 'weekday'
+          END AS weekend_or_not
+          COUNT(*)
+					FROM
+					    fake_table AS ft
+					GROUP BY
+          CASE
+              WHEN extract(isodow from date date) > 5 THEN 'weekend'
+              ELSE 'weekday'
+					     END
+				</code></pre>
+			</section>
+
+			<section>
+				<h3>Window Functions</h3>
+				<p>Create a list of users and the first series they wathced.</p>
+				<pre><code class="hljs" data-trim contenteditable>
+					WITH temp_table AS (
+	        SELECT
+					        user_id,
+					        series_name,
+					        rank() OVER (PARTITION BY user_id ORDER BY date ASC)
+					    FROM
+					        fake_table
+					)
+					SELECT
+					    user_id,
+					    series_name
+					FROM
+					    temp_table
+					WHERE
+					    rank = 1
+				</code></pre>
+			</section>
+
+			<section>
+				<h3>Optimization/Run Order</h3>
+				<ol>
+					<li>FROM</li>
+					<li>ON</li>
+					<li>OUTER</li>
+					<li>WHERE</li>
+					<li>GROUP BY</li>
+					<li>HAVING</li>
+					<li>SELECT</li>
+					<li>DISTINCT</li>
+					<li>ORDER BY</li>
+					<li>LIMIT/TOP</li>
+				</ol>
+				<p class="fragment">Temp tables are faster when many tables. Joins are faster when using fewer tables.</p>
 			</section>
 
 			<section>
@@ -234,6 +461,11 @@
 					<li><a href="https://community.modeanalytics.com/sql/tutorial/introduction-to-sql/">Mode Analytics</a></li>
 					<li><a href="https://spark.apache.org/docs/latest/api/python/pyspark.sql.html">Spark SQL</a></li>
 				</ul>
+			</section>
+
+			<section>
+				<h3>SQL can be fun!</h3>
+				<img height=500 width=500 src="https://media.giphy.com/media/RO8u908r6PsOc/giphy.gif"></img>
 			</section>
 
 			</div>

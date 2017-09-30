@@ -10,11 +10,10 @@ Built using [reveal.js](https://github.com/hakimel/reveal.js).
 4. Groupby / having. aggregations.
 5. Joins - images that actually make sense (self, semi) - as a filtering method. aliasing
 6. Sub queries - with statements - temp tables!
-7. exists vs in
-8. Case statements
+7. exists + in
+8. Case statements - dealing with dates
 9. Windows
-10. dealing with dates
-11. Optimization / Run order.
+10. Optimization / Run order.
 
 sql zoo!
 spark.
