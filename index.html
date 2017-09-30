@@ -73,9 +73,10 @@
 				<section>
 					<h3>SQL is hard.</h3>
 					<p>
-						<span class="fragment"><img height=500 width=500 src="https://media0.giphy.com/media/Vu8nIaC6rSVi/200.gif"></img></span>
+						<img height=500 width=500 src="https://media0.giphy.com/media/Vu8nIaC6rSVi/200.gif"></img>
 					</p>
 				</section>
+				<!-- Why it's hard - multiple sub-types. Write order != run order -->
 
 				<section>
 					<h3>Syntax</h3>
@@ -89,15 +90,15 @@
 				</section>
 
 				<section>
-					<h3>Fake_Table</h3>
+					<h3>viewing_table</h3>
 						<table id="cssTable">
 							<thead>
 								<tr>
 									<th>User_id</th>
 									<th>Date</th>
 									<th>series_name</th>
-									<th>season_number</th>
-									<th>episode_number</th>
+									<th>season_id</th>
+									<th>episode_id</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -136,14 +137,14 @@
 				<section>
 					<section>
 						<h3>Where statement</h3>
-							<p>Create a list of people who watched "Star Trek: The Next Generation".</p>
+							<p>Create a list of people who watched "Star Trek: DS9".</p>
 							<pre class=fragment><code class="hljs" data-trim contenteditable>
 								SELECT
 								    DISTINCT(user_id)
 								FROM
-								    fake_table
+								    viewing_table
 								WHERE
-								    series_name = "Star Trek: The Next Generation"
+								    series_name = "Star Trek: DS9"
 							</code></pre>
 					</section>
 					<section>
@@ -153,7 +154,7 @@
 							 SELECT
 							     DISTINCT(user_id)
 							 FROM
-							     fake_table
+							     viewing_table
 							 WHERE
 							     series_name LIKE "Star Trek%"
 						 </code></pre>
@@ -168,39 +169,39 @@
 						 <pre class=fragment><code class="hljs" data-trim contenteditable>
 							 SELECT
 							     user_id,
-							     COUNT(episode_number) AS e1_count
+							     COUNT(episode_id) AS e1_count
 							 FROM
-							     fake_table
+							     viewing_table
 							 WHERE
 							     series_name = "Star Trek: Voyager"
 							     AND
-							     episode_number = 1.0
+							     episode_id = 1.0
 							 GROUP BY
 							     user_id
 							 ORDER BY
-							     COUNT(episode_number)
+							     e1_count DESC
 							 LIMIT 10
 						 </code></pre>
 				 </section>
 				 <section>
 					<h3>Group By Statement: The Return</h3>
-						<p>Create a list of then people that watched the all "Star Trek: Voyager" episode ones.</p>
+						<p>Create a list of the people that watched the all "Star Trek: Voyager" episode ones.</p>
 						<pre class=fragment><code class="hljs" data-trim contenteditable>
 							SELECT
 							    user_id,
-							    COUNT(episode_number) AS e1_count
+							    COUNT(episode_id) AS e1_count
 							FROM
-							    fake_table
+							    viewing_table
 							WHERE
 							    series_name = "Star Trek: Voyager"
 							    AND
-							    episode_number = 1.0
+							    episode_id = 1.0
 							GROUP BY
 							    user_id
 							HAVING
-							    COUNT(episode_number) = 7
+							    COUNT(episode_id) = 7
 						</code></pre>
-						<p class=fragment>Note: Can't use select alias in where/having/groupby :/</p>
+						<p class=fragment>Note: Can't use select alias in where/having :/</p>
 				</section>
 			</section>
 
@@ -211,11 +212,14 @@
 				</section>
 				<section>
 					<h3>Tables are not circles</h3>
-					<img src="http://www.sqltutorial.org/wp-content/uploads/2016/03/SQL-INNER-JOIN-example.png"></img>
+					<img src="https://media.giphy.com/media/r1AJtSlmhdvP2/giphy.gif"></img>
 					<p>In joins the important question is what happens to missing/repeated values</p>
 				</section>
+
+				<!-- animate join -->
+
 				<section>
-					<h3>Fake_table_2</h3>
+					<h3>series_table</h3>
 					<table id="cssTable">
 						<thead>
 							<tr>
@@ -259,22 +263,22 @@
 					</table>
 				</section>
 				<section>
-					<h3>Join Qusetion</h3>
-					<p>Create a list of the ten people who watched the most non-male-lead episodes.</p>
+					<h3>Join Question</h3>
+					<p>Create a list of the ten people who watched the most epsidoes from a series with a non-male-lead.</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						SELECT
-						    ft.user_id,
-						    COUNT(ft.episode_number) AS e1_count
+						    vt.user_id,
+						    COUNT(DISTINCT(ft.episode_id)) AS e1_count
 						FROM
-						    fake_table AS ft
-						    LEFT JOIN fake_table_2 AS ft2
-						      ON ft.seies_name = ft2.series_name
+						    viewing_table AS vt
+						    INNER JOIN series_table AS st
+						      ON vt.series_name = st.series_name
 						WHERE
-						    ft2.male_lead = False
+						    st.male_lead = 0
 						GROUP BY
-						    ft.user_id
+						    vt.user_id
 						ORDER BY
-						    COUNT(ft.episode_number)
+						    e1_count
 						LIMIT 10
 					</code></pre>
 				</section>
@@ -286,22 +290,22 @@
 					<p>Create a list of the ten people who watched the most non-male-lead shows.</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						SELECT
-						    ft.user_id,
+						    vt.user_id,
 						    COUNT(ft.series_name) AS series_count
 						FROM
 						    (SELECT
 						         DISTINCT(user_id, series_name)
 						     FROM
-						         fake_table
-						    ) AS ft
-						    LEFT JOIN fake_table_2 AS ft2
-						      ON ft.seies_name = ft2.series_name
+						         viewing_table
+						    ) AS vt
+						    INNER JOIN series_table AS st
+						      ON vt.seies_name = st.series_name
 						WHERE
-						    ft2.male_lead = False
+						    st.male_lead = False
 						GROUP BY
-						    ft.user_id
+						    vt.user_id
 						ORDER BY
-						    COUNT(ft.series_name)
+						    series_count
 						LIMIT 10
 					</code></pre>
 				</section>
@@ -317,21 +321,21 @@
 						    SELECT
 						        DISTINCT(user_id, series_name)
 						    FROM
-						        fake_table
+						        viewing_table
 						)
 						SELECT
-						    ft.user_id,
+						    vt.user_id,
 						    COUNT(ft.series_name) AS series_count
 						FROM
-						    temp_table AS ft
-						    LEFT JOIN fake_table_2 AS ft2
-						      ON ft.seies_name = ft2.series_name
+						    temp_table AS st
+						    INNER JOIN series_table AS st
+						      ON vt.seies_name = st.series_name
 						WHERE
-						    ft2.male_lead = False
+						    st.male_lead = 0
 						GROUP BY
-						    ft.user_id
+						    vt.user_id
 						ORDER BY
-						    COUNT(ft.series_name)
+						    series_count
 						LIMIT 10
 					</code></pre>
 				</section>
@@ -344,22 +348,22 @@
 			<section>
 				<section>
 					<h3>Exist Statements</h3>
-					<p>Create a list of ten people who watched Star Trek: Voyager and Star Trek: DS9.</p>
+					<p>Create a list of people who watched Star Trek: Voyager and Star Trek: DS9.</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						WITH temp_table AS (
 						    SELECT
 						        DISTINCT(user_id) AS user_id
 						    FROM
-						        fake_table
+						        viewing_table
 						    WHERE
 						        series_name = 'Star Trek: Voyager'
 						)
 						SELECT
 						    DISTINCT(user_id) AS user_id
 						FROM
-						    fake_table AS ft
+						    viewing_table
 						WHERE
-						    series_name = 'Star Trek: Voyager'
+						    series_name = 'Star Trek: DS9'
 						    AND
 						    EXISTS (
 							SELECT
@@ -367,27 +371,27 @@
 						        FROM
 						            temp_table
 						        WHERE
-						            temp_table.user_id = ft.user_id)
+						            temp_table.user_id = vt.user_id)
 					</code></pre>
 				</section>
 				<section>
 					<h3>In Statements</h3>
-					<p>Create a list of ten people who watched Star Trek: Voyager and Star Trek: DS9.</p>
+					<p>Create a list of people who watched Star Trek: Voyager and Star Trek: DS9.</p>
 					<pre><code class="hljs" data-trim contenteditable>
 						WITH temp_table AS (
 						    SELECT
 						        DISTINCT(user_id) AS user_id
 						    FROM
-						        fake_table
+						        viewing_table
 						    WHERE
 						        series_name = 'Star Trek: Voyager'
 						)
 						SELECT
 						    DISTINCT(user_id) AS user_id
 						FROM
-						    fake_table AS ft
+						    viewing_table
 						WHERE
-						    series_name = 'Star Trek: Voyager'
+						    series_name = 'Star Trek: DS9'
 						    AND
 						    user_id IN (SELECT user_id FROM temp_table)
 					</code></pre>
@@ -400,23 +404,20 @@
 				<pre><code class="hljs" data-trim contenteditable>
 					SELECT
           CASE
-              WHEN extract(isodow from date date) > 5 THEN 'weekend'
+              WHEN extract('isodow' from date) > 5 THEN 'weekend'
               ELSE 'weekday'
-          END AS weekend_or_not
+          END AS weekend_or_not,
           COUNT(*)
 					FROM
-					    fake_table AS ft
+					    viewing_table AS vt
 					GROUP BY
-          CASE
-              WHEN extract(isodow from date date) > 5 THEN 'weekend'
-              ELSE 'weekday'
-					     END
+					    weekend_or_not
 				</code></pre>
 			</section>
 
 			<section>
 				<h3>Window Functions</h3>
-				<p>Create a list of users and the first series they wathced.</p>
+				<p>Create a list of users and the first series they watched.</p>
 				<pre><code class="hljs" data-trim contenteditable>
 					WITH temp_table AS (
 	        SELECT
@@ -424,7 +425,7 @@
 					        series_name,
 					        rank() OVER (PARTITION BY user_id ORDER BY date ASC)
 					    FROM
-					        fake_table
+					        viewing_table
 					)
 					SELECT
 					    user_id,
