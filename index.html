@@ -90,46 +90,41 @@
 				</section>
 
 				<section>
-					<h3>viewing_table</h3>
+					<h3>Buy_table</h3>
 						<table id="cssTable">
 							<thead>
 								<tr>
-									<th>User_id</th>
-									<th>Date</th>
-									<th>series_name</th>
-									<th>season_id</th>
-									<th>episode_id</th>
-								</tr>
+									<th>Customer_id</th>
+									<th>buy_date</th>
+									<th>tool_category</th>
+									<th>tool_id</th>
+							</tr>
 							</thead>
 							<tbody>
 								<tr>
 									<td>1</td>
 									<td>'2017-11-01'</td>
-									<td>'Battlestar Galactica'</td>
-									<td>1.0</td>
+									<td>Hammer'</td>
 									<td>1.0</td>
 								</tr>
 								<tr>
 									<td>2</td>
 									<td>'2017-11-01'</td>
-									<td>'Star Trek: DS9'</td>
+									<td>'Wrench'</td>
 									<td>7.0</td>
-									<td>24.0</td>
 								</tr>
 								<tr>
 									<td>2</td>
 									<td>'2017-11-02'</td>
-									<td>'Star Trek: DS9'</td>
+									<td>'Hammer'</td>
 									<td>7.0</td>
-									<td>25.0</td>
 								</tr>
 								<tr>
 									<td><div class="vert_dots"></div></td>
 									<td><div class="vert_dots"></div></td>
 									<td><div class="vert_dots"></div></td>
 									<td><div class="vert_dots"></div></td>
-									<td><div class="vert_dots"></div></td>
-								</tr>
+							</tr>
 							</tbody>
 						</table>
 				</section>
@@ -137,26 +132,26 @@
 				<section>
 					<section>
 						<h3>Where statement</h3>
-							<p>Create a list of people who watched "Star Trek: DS9".</p>
+							<p>Create a list of people bought a "Hammer".</p>
 							<pre class=fragment><code class="hljs" data-trim contenteditable>
 								SELECT
 								    DISTINCT(user_id)
 								FROM
-								    viewing_table
+								    buy_table
 								WHERE
-								    series_name = "Star Trek: DS9"
+								    tool_category = "Hammer"
 							</code></pre>
 					</section>
 					<section>
 	 				 <h3>Where statement: Reloaded</h3>
-					 	 <p>How to create a list of people who watched "Star Trek"?</p>
+					 	 <p>Create a list of people bought a "screw" or "Screw driver"?</p>
 						 <pre class=fragment><code class="hljs" data-trim contenteditable>
 							 SELECT
 							     DISTINCT(user_id)
 							 FROM
-							     viewing_table
+							     buy_table
 							 WHERE
-							     series_name LIKE "Star Trek%"
+							     tool_category ILIKE "screw%"
 						 </code></pre>
 						 <p class=fragment>Note: sql alchemy (python api) gets angry about % signs (use %%)
 	 			 </section>
@@ -165,41 +160,39 @@
 			 <section>
 				 <section>
 					 <h3>Group By Statement</h3>
-						 <p>Create a list of the 10 people that watched the most "Star Trek: Voyager" episode ones.</p>
+						 <p>Create a list of the 10 people that bought the most "Hammers" where the id number is 1.</p>
 						 <pre class=fragment><code class="hljs" data-trim contenteditable>
 							 SELECT
 							     user_id,
-							     COUNT(episode_id) AS e1_count
+							     COUNT(tool_id) AS buy_count
 							 FROM
-							     viewing_table
+							     buy_table
 							 WHERE
-							     series_name = "Star Trek: Voyager"
+							     tool_category = "Hammer"
 							     AND
-							     episode_id = 1.0
+							     tool_id = 1.0
 							 GROUP BY
 							     user_id
 							 ORDER BY
-							     e1_count DESC
+							     buy_count DESC
 							 LIMIT 10
 						 </code></pre>
 				 </section>
 				 <section>
 					<h3>Group By Statement: The Return</h3>
-						<p>Create a list of the people that watched the all "Star Trek: Voyager" episode ones.</p>
+						<p>Create a list of the people that bought more than 7 "screws".</p>
 						<pre class=fragment><code class="hljs" data-trim contenteditable>
 							SELECT
 							    user_id,
-							    COUNT(episode_id) AS e1_count
+							    COUNT(tool_id) AS buy_count
 							FROM
-							    viewing_table
+							    buy_table
 							WHERE
-							    series_name = "Star Trek: Voyager"
-							    AND
-							    episode_id = 1.0
+							    tool_category = "screws"
 							GROUP BY
 							    user_id
 							HAVING
-							    COUNT(episode_id) = 7
+							    COUNT(tool_id) > 7
 						</code></pre>
 						<p class=fragment>Note: Can't use select alias in where/having :/</p>
 				</section>
@@ -216,45 +209,33 @@
 					<p>In joins the important question is what happens to missing/repeated values</p>
 				</section>
 
-				<!-- animate join -->
-
 				<section>
-					<h3>series_table</h3>
+					<h3>tool_table</h3>
 					<table id="cssTable">
 						<thead>
 							<tr>
-								<th>series_name</th>
-								<th>male_lead</th>
-								<th>genre</th>
-								<th>certified_fresh</th>
-								<th>start_date</th>
+								<th>tool_category</th>
+								<th>hand_tool</th>
+								<th>mechanical</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td>'Battlestar Galactica'</td>
+								<td>'Hammer'</td>
 								<td>1</td>
-								<td>'sci-fi'</td>
-								<td>1</td>
-								<td>'2003-12-08'</td>
-							</tr>
-							<tr>
-								<td>'Star Trek: DS9'</td>
-								<td>1</td>
-								<td>'sci-fi'</td>
-								<td>1</td>
-								<td>'1993-01-03'</td>
-							</tr>
-							<tr>
-								<td>'Star Trek: Voyager'</td>
 								<td>0</td>
-								<td>'sci-fi'</td>
-								<td>1</td>
-								<td>'1995-01-16'</td>
 							</tr>
 							<tr>
-								<td><div class="vert_dots"></div></td>
-								<td><div class="vert_dots"></div></td>
+								<td>'Wrench'</td>
+								<td>1</td>
+								<td>0</td>
+							</tr>
+							<tr>
+								<td>'Screw'</td>
+								<td>0</td>
+								<td>0</td>
+							</tr>
+							<tr>
 								<td><div class="vert_dots"></div></td>
 								<td><div class="vert_dots"></div></td>
 								<td><div class="vert_dots"></div></td>
@@ -264,21 +245,21 @@
 				</section>
 				<section>
 					<h3>Join Question</h3>
-					<p>Create a list of the ten people who watched the most epsidoes from a series with a non-male-lead.</p>
+					<p>Create a list of the ten people who bought the most "hand tools".</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						SELECT
-						    vt.user_id,
-						    COUNT(DISTINCT(ft.episode_id)) AS e1_count
+						    bt.user_id,
+						    COUNT(DISTINCT(bt.tool_id)) AS buy_count
 						FROM
-						    viewing_table AS vt
-						    INNER JOIN series_table AS st
-						      ON vt.series_name = st.series_name
+						    buy_table AS bt
+						    INNER JOIN tool_table AS tt
+						      ON bt.tool_category = tt.tool_category
 						WHERE
-						    st.male_lead = 0
+						    tt.hand_tool = 1
 						GROUP BY
-						    vt.user_id
+						    bt.user_id
 						ORDER BY
-						    e1_count
+						    buy_count
 						LIMIT 10
 					</code></pre>
 				</section>
@@ -287,25 +268,25 @@
 			<section>
 				<section>
 					<h3>Sub-Queries</h3>
-					<p>Create a list of the ten people who watched the most non-male-lead shows.</p>
+					<p>Create a list of the ten people who bought an item from the most distinct "hand tool" categories.</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						SELECT
-						    vt.user_id,
-						    COUNT(ft.series_name) AS series_count
+						    bt.user_id,
+						    COUNT(tt.tool_category) AS tool_count
 						FROM
 						    (SELECT
-						         DISTINCT(user_id, series_name)
+						         DISTINCT(user_id, tool_category)
 						     FROM
-						         viewing_table
-						    ) AS vt
-						    INNER JOIN series_table AS st
-						      ON vt.seies_name = st.series_name
+						         buy_table
+						    ) AS bt
+						    INNER JOIN tool_table AS tt
+						      ON bt.seies_name = tt.tool_category
 						WHERE
-						    st.male_lead = False
+						    tt.hand_tool = 1
 						GROUP BY
-						    vt.user_id
+						    bt.user_id
 						ORDER BY
-						    series_count
+						    tool_count
 						LIMIT 10
 					</code></pre>
 				</section>
@@ -315,27 +296,27 @@
 				</section>
 				<section>
 					<h3>Sub-Queries with a temp table</h3>
-					<p>Create a list of the ten people who watched the most non-male-lead shows.</p>
+					<p>Create a list of the ten people who bought an item from the most distinct "hand tool" categories.</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						WITH temp_table AS (
 						    SELECT
-						        DISTINCT(user_id, series_name)
+						        DISTINCT(user_id, tool_category)
 						    FROM
-						        viewing_table
+						        buy_table
 						)
 						SELECT
-						    vt.user_id,
-						    COUNT(ft.series_name) AS series_count
+						    tt.user_id,
+						    COUNT(tt.tool_category) AS tool_count
 						FROM
-						    temp_table AS st
-						    INNER JOIN series_table AS st
-						      ON vt.seies_name = st.series_name
+						    temp_table AS tt
+						    INNER JOIN tool_table AS tt3
+						      ON tt.seies_name = tt2.tool_category
 						WHERE
-						    st.male_lead = 0
+						    tt2.hand_tool = 0
 						GROUP BY
-						    vt.user_id
+						    tt.user_id
 						ORDER BY
-						    series_count
+						    tool_count
 						LIMIT 10
 					</code></pre>
 				</section>
@@ -348,22 +329,22 @@
 			<section>
 				<section>
 					<h3>Exist Statements</h3>
-					<p>Create a list of people who watched Star Trek: Voyager and Star Trek: DS9.</p>
+					<p>Create a list of people who bought a "Wrench" and a "Hammer".</p>
 					<pre class=fragment><code class="hljs" data-trim contenteditable>
 						WITH temp_table AS (
 						    SELECT
 						        DISTINCT(user_id) AS user_id
 						    FROM
-						        viewing_table
+						        buy_table
 						    WHERE
-						        series_name = 'Star Trek: Voyager'
+						        tool_category = 'Hammer'
 						)
 						SELECT
 						    DISTINCT(user_id) AS user_id
 						FROM
-						    viewing_table
+						    buy_table AS bt
 						WHERE
-						    series_name = 'Star Trek: DS9'
+						    tool_category = 'Wrench'
 						    AND
 						    EXISTS (
 							SELECT
@@ -371,27 +352,27 @@
 						        FROM
 						            temp_table
 						        WHERE
-						            temp_table.user_id = vt.user_id)
+						            temp_table.user_id = bt.user_id)
 					</code></pre>
 				</section>
 				<section>
 					<h3>In Statements</h3>
-					<p>Create a list of people who watched Star Trek: Voyager and Star Trek: DS9.</p>
+					<p>Create a list of people who bought a "Wrench" and a "Hammer".</p>
 					<pre><code class="hljs" data-trim contenteditable>
 						WITH temp_table AS (
 						    SELECT
 						        DISTINCT(user_id) AS user_id
 						    FROM
-						        viewing_table
+						        buy_table
 						    WHERE
-						        series_name = 'Star Trek: Voyager'
+						        tool_category = 'Hammer'
 						)
 						SELECT
 						    DISTINCT(user_id) AS user_id
 						FROM
-						    viewing_table
+						    buy_table
 						WHERE
-						    series_name = 'Star Trek: DS9'
+						    tool_category = 'Wrench'
 						    AND
 						    user_id IN (SELECT user_id FROM temp_table)
 					</code></pre>
@@ -400,16 +381,16 @@
 
 			<section>
 				<h3>Case Statements</h3>
-				<p>Count whether more episodes are watched on the weekends or weekdays.</p>
+				<p>Count whether more items are bought on the weekends or weekdays.</p>
 				<pre><code class="hljs" data-trim contenteditable>
 					SELECT
           CASE
-              WHEN extract('isodow' from date) > 5 THEN 'weekend'
+              WHEN extract('isodow' from buy_date) > 5 THEN 'weekend'
               ELSE 'weekday'
           END AS weekend_or_not,
           COUNT(*)
 					FROM
-					    viewing_table AS vt
+					    buy_table AS vt
 					GROUP BY
 					    weekend_or_not
 				</code></pre>
@@ -417,19 +398,19 @@
 
 			<section>
 				<h3>Window Functions</h3>
-				<p>Create a list of users and the first series they watched.</p>
+				<p>Create a list of users and the first item they bought.</p>
 				<pre><code class="hljs" data-trim contenteditable>
 					WITH temp_table AS (
 	        SELECT
 					        user_id,
-					        series_name,
-					        rank() OVER (PARTITION BY user_id ORDER BY date ASC)
+					        tool_category,
+					        rank() OVER (PARTITION BY user_id ORDER BY buy_date ASC)
 					    FROM
-					        viewing_table
+					        buy_table
 					)
 					SELECT
 					    user_id,
-					    series_name
+					    tool_category
 					FROM
 					    temp_table
 					WHERE
@@ -489,7 +470,7 @@
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
-					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'lib/js/classLitt.js', condition: function() { return !document.body.classList; } },
 					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
