@@ -173,7 +173,7 @@
 							 FROM
 							     listen_table
 							 WHERE
-							     arist = "Lauryn Hill"
+							     artist = "Lauryn Hill"
 							 GROUP BY
 							     user_id
 							 ORDER BY
@@ -213,7 +213,7 @@
 				</section>
 
 				<section>
-					<h3>arist_table</h3>
+					<h3>artist_table</h3>
 					<table id="cssTable">
 						<thead>
 							<tr>
@@ -260,8 +260,8 @@
 						    COUNT(DISTINCT lt.song_id ) AS listen_count
 						FROM
 						    listen_table AS lt
-						    INNER JOIN arist_table AS at
-						      ON lt.arist_id = at.arist_id
+						    INNER JOIN artist_table AS at
+						      ON lt.artist_id = at.artist_id
 						WHERE
 						    at.music_genre = "Hip Hop"
 						GROUP BY
@@ -287,8 +287,8 @@
 						     FROM
 						         listen_table
 						    ) AS lt
-						    INNER JOIN arist_table AS at
-						      ON lt.user_id = at.user_id
+						    INNER JOIN artist_table AS at
+						      ON lt.artist_id = at.artist_id
 						WHERE
 						    at.music_genre = "R and B"
 						GROUP BY
@@ -317,10 +317,10 @@
 						    COUNT(at.artist) AS artist_count
 						FROM
 						    temp_table AS tt
-						    INNER JOIN arist_table AS at
-						      ON tt.user_id = at.user_id
+						    INNER JOIN artist_table AS at
+						      ON tt.artist_id = at.artist_id
 						WHERE
-						    tt.music_genre = "R and B"
+						    at.music_genre = "R and B"
 						GROUP BY
 						    at.user_id
 						ORDER BY
@@ -335,6 +335,28 @@
 			</section>
 
 			<section>
+				<section>
+					<h3>In Statements</h3>
+					<p>Create a list of people who listened to "The Beatles" and "Kanye West".</p>
+					<pre><code class="hljs" data-trim contenteditable>
+						WITH temp_table AS (
+						    SELECT
+						        DISTINCT user_id  AS user_id
+						    FROM
+						        listen_table
+						    WHERE
+						        artist = 'The Beatles'
+						)
+						SELECT
+						    DISTINCT user_id AS user_id
+						FROM
+						    listen_table
+						WHERE
+						    artist = 'Kanye West'
+						AND
+						    user_id IN (SELECT user_id FROM temp_table)
+					</code></pre>
+				</section>
 				<section>
 					<h3>Exist Statements</h3>
 					<p>Create a list of people who listened to "The Beatles" and "Kanye West".</p>
@@ -363,28 +385,6 @@
 						            temp_table.user_id = lt.user_id)
 					</code></pre>
 				</section>
-				<section>
-					<h3>In Statements</h3>
-					<p>Create a list of people who listened to "The Beatles" and "Kanye West".</p>
-					<pre><code class="hljs" data-trim contenteditable>
-						WITH temp_table AS (
-						    SELECT
-						        DISTINCT user_id  AS user_id
-						    FROM
-						        listen_table
-						    WHERE
-						        artist = 'The Beatles'
-						)
-						SELECT
-						    DISTINCT user_id AS user_id
-						FROM
-						    listen_table
-						WHERE
-						    artist = 'Kanye West'
-						    AND
-						    user_id IN (SELECT user_id FROM temp_table)
-					</code></pre>
-				</section>
 			</section>
 
 			<section>
@@ -393,7 +393,7 @@
 				<pre><code class="hljs" data-trim contenteditable>
 					SELECT
           CASE
-              WHEN extract('isodow' from listen_date) > 5 THEN 'weekend'
+              WHEN extract('dow' from listen_date) > 5 THEN 'weekend'
               ELSE 'weekday'
           END AS weekend_or_not,
           COUNT(*)
@@ -441,6 +441,11 @@
 					<li>LIMIT/TOP</li>
 				</ol>
 				<p class="fragment">Temp tables are faster when many tables. Joins are faster when using fewer tables.</p>
+			</section>
+
+			<section>
+				<h3>Watch out for null values</h3>
+				<p>The way that SQL handles null values is often not how you would expect.</p>
 			</section>
 
 			<section>
